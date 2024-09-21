@@ -1,0 +1,29 @@
+#imageContainer {
+    width: 1920px;
+    height: 1080px;
+    background-color: black;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.74);
+}
+
+#fhdPreviewImage {
+    pointer-events: none;
+    user-select: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.controllerButtonContainer {
+    position: sticky;
+    top: 1080px;
+    padding: 10px;
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    z-index: 10;
+}

@@ -1,0 +1,159 @@
+:root {
+    --gradient-angle: 130deg;
+    --gradient-color-1: #5564f1;
+    --gradient-color-2: black;
+    --gradient-color-3: green;
+    --text-color: white;
+    --button-color: #5564f1;
+    --button-hover-color: #4450d9;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    color: var(--text-color);
+    overflow-x: hidden;
+    background: linear-gradient(
+        var(--gradient-angle),
+        var(--gradient-color-1) 0%,
+        var(--gradient-color-2) 10%,
+        var(--gradient-color-2) 90%,
+        var(--gradient-color-3) 100%
+    );
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+.content {
+    position: relative;
+    display: flex;
+    min-height: 100vh;
+    align-items: center;
+    padding: 5% 10%;
+    box-sizing: border-box;
+    transition: opacity 0.5s ease;
+}
+
+.text-content {
+    max-width: 50%;
+    z-index: 1;
+    transition: opacity 0.5s ease;
+}
+
+h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+}
+
+p {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+.button, .dashboard-button, .back-button {
+    background-color: var(--button-color);
+    color: var(--text-color);
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover, .dashboard-button:hover, .back-button:hover {
+    background-color: var(--button-hover-color);
+}
+
+a {
+    text-decoration: none;
+}
+
+.logo {
+    position: absolute;
+    right: 10%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: min(50vw, 600px);
+    height: auto;
+    max-width: 600px;
+    z-index: 0;
+    user-select: none;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.text-content {
+    animation: slideInFromLeft 1.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+.right-flow-text {
+    opacity: 0;
+    animation: slideInFromLeft 1.5s cubic-bezier(0.25, 0.1, 0.25, 1) 0.2s forwards;
+}
+
+.dashboard-button {
+    opacity: 0;
+    animation: slideInFromLeft 1.5s cubic-bezier(0.25, 0.1, 0.25, 1) 0.6s forwards;
+}
+
+.logo {
+    opacity: 0;
+    animation: fadeInFromRight 1.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+.inputBarContainer {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+.inputBarContainer label {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.inputField {
+    width: 120px;
+    padding: 8px 12px;
+    border: 1px solid #555;
+    border-radius: 8px;
+    background-color: #222;
+    color: var(--text-color);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.inputField:focus {
+    border-color: var(--button-color);
+    box-shadow: 0 0 5px var(--button-color);
+}
+
+@keyframes slideInFromLeft {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInFromRight {
+    0% {
+        transform: translateX(50%) translateY(-50%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0) translateY(-50%);
+        opacity: 1;
+    }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "obs-admin-panel",
+  "version": "0.0.1",
+  "description": "Administration web-tool to remote controll certain OBS features via the OBS-WebSocket",
+  "main": "js/server.js",
+  "scripts": {
+    "start": "node js/server.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "dotenv": "latest",
+    "express": "latest",
+    "obs-websocket-js": "latest",
+    "socket.io": "latest"
+  },
+  "engines": {
+    "node": ">=22.8.0"
+  },
+  "author": "kfguy",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.4",
+    "babel-jest": "^29.7.0",
+    "jest": "latest"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    }
+  }
+}
