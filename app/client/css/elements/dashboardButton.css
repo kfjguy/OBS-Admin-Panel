@@ -1,0 +1,25 @@
+.dashboard-button-container {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+}
+
+.dashboard-button {
+    background-color: var(--button-color);
+    color: var(--text-color);
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.dashboard-button:hover {
+    background-color: var(--button-hover-color);
+}

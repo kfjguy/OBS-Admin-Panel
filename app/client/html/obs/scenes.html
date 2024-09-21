@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBS Admin Panel - Scene Manager</title>
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js" integrity="sha384-KA7m0DwgQGmeRC6Xre3hJO+ZxpanOauVh4Czdqbg8lDKJ3bZZYVYmP+y4F31x40L" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/elements/dashboardButton.css">
+    <link rel="stylesheet" href="/css/elements/popup.css">
+    <link rel="stylesheet" href="/css/obs/obs.css">
+    <link rel="icon" href="/images/logo.svg">
+</head>
+<body>
+    <!-- ELEMENT LOADED WITH JS -->
+    <div id="dashboard-button"></div>
+
+    <div class="container">
+        <h1>OBS - Scene Manager</h1>
+        <h2>Current Scene: <span id="current-scene"></span></h2>
+
+        <h2>Scenes</h2>
+        <ul class="scene-list" id="scene-list"></ul>
+
+        <h2>Add New Scene</h2>
+        <form class="add-scene-form">
+            <input id="input-bar" type="text" placeholder="Enter scene name" />
+            <button type="button" class="btn btn-green">Create</button>
+        </form>
+
+        <div class="preview-area">
+            <h2>Scene Preview</h2>
+            <div class="preview-container">
+                <div class="preview-placeholder">
+                    <img id="preview-image" src="" alt="Scene Preview" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/js/elements/elementLoader.js"></script>
+    <script src="/js/obs/sceneManager.js"></script>
+    <script src="/js/elements/verifyPopup.js"></script>
+</body>
+</html>
