@@ -1,0 +1,5 @@
+.env
+.code-workspace
+.gitignore
+.npm
+node_modules/

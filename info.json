@@ -1,8 +1,9 @@
 {
-    "version": "0.1",
+    "version": "v0.1.0",
     "name": "OBS Admin Panel",
     "description": "Administration web-tool to remote controll certain OBS features via the OBS-WebSocket",
     "author": "kfguy",
     "license": "MIT",
-    "repository": "https://github.com/kfjguy/OBS-Admin-Panel"
+    "github-repository": "https://github.com/kfjguy/OBS-Admin-Panel",
+    "docker-repository": "https://hub.docker.com/repository/docker/kfjguy/obs-admin-panel"
 }
