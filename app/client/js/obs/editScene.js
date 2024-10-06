@@ -16,6 +16,10 @@ const elementHeightInput = document.getElementById('elementHeight');
 const elementXInput = document.getElementById('elementX');
 const elementYInput = document.getElementById('elementY');
 
+function roundToDecimals(value, decimals) {
+    return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+}
+
 function debounce(func, wait) {
     let timeout;
     return function(...args) {
@@ -66,10 +70,10 @@ function loadItems(items) {
         element.style.zIndex = '10';
 
         element.setAttribute('data-id', item.sceneItemId);
-        element.setAttribute('data-x', scaledX);
-        element.setAttribute('data-y', scaledY);
-        element.setAttribute('data-width', scaledWidth);
-        element.setAttribute('data-height', scaledHeight);
+        element.setAttribute('data-x', roundToDecimals(scaledX, 0));
+        element.setAttribute('data-y', roundToDecimals(scaledY, 0));
+        element.setAttribute('data-width', roundToDecimals(scaledWidth, 2));
+        element.setAttribute('data-height', roundToDecimals(scaledHeight, 2));
         element.setAttribute('data-name', item.sourceName || 'Unknown');
         element.setAttribute('data-visible', item.sceneItemEnabled);
         element.setAttribute('data-locked', item.sceneItemLocked);
@@ -142,8 +146,8 @@ function dragMoveListener(event) {
     target.style.left = `${x}px`;
     target.style.top = `${y}px`;
 
-    target.setAttribute('data-x', x);
-    target.setAttribute('data-y', y);
+    target.setAttribute('data-x', roundToDecimals(x, 0));
+    target.setAttribute('data-y', roundToDecimals(y, 0));
 
     if (selectedElement === target) {
         updateInspector(target);
@@ -181,8 +185,8 @@ function updateInspector(element) {
         elementLockedInput.disabled = false;
         elementWidthInput.disabled = true; // TODO
         elementHeightInput.disabled = true; // TODO
-        elementXInput.disabled = true; // TODO
-        elementYInput.disabled = true; // TODO
+        elementXInput.disabled = false;
+        elementYInput.disabled = false;
 
         elementNameInput.value = element.getAttribute('data-name') || '';
         elementVisibilityInput.checked = (element.getAttribute('data-visible') === 'true');
@@ -215,6 +219,10 @@ function sleep(ms) {
 }
 
 document.addEventListener('keydown', (event) => {
+    if (!selectedElement) {
+        return;
+    }
+
     let handled = false;
     let deltaX = 0;
     let deltaY = 0;
@@ -258,8 +266,8 @@ document.addEventListener('keydown', (event) => {
         selectedElement.style.left = `${x}px`;
         selectedElement.style.top = `${y}px`;
 
-        selectedElement.setAttribute('data-x', x);
-        selectedElement.setAttribute('data-y', y);
+        selectedElement.setAttribute('data-x', roundToDecimals(x, 0));
+        selectedElement.setAttribute('data-y', roundToDecimals(y, 0));
 
         updateInspector(selectedElement);
 
@@ -410,4 +418,32 @@ sceneItemsContainer.addEventListener('click', () => {
         selectedElement = null;
         updateInspector(null);
     }
+});
+
+elementXInput.addEventListener('change', () => {
+    if (!selectedElement) {
+        return;
+    }
+    const sceneItemId = selectedElement.getAttribute('data-id');
+    const scaleFactor = window.scaleFactor || 1;
+
+    const newX = Number(elementXInput.value) * scaleFactor;
+    const newY = Number(elementYInput.value) * scaleFactor;
+
+    updateSceneItemPosition(sceneItemId, newX, newY);
+    debouncedReloadScene();
+});
+
+elementYInput.addEventListener('change', () => {
+    if (!selectedElement) {
+        return;
+    }
+    const sceneItemId = selectedElement.getAttribute('data-id');
+    const scaleFactor = window.scaleFactor || 1;
+
+    const newX = Number(elementXInput.value) * scaleFactor;
+    const newY = Number(elementYInput.value) * scaleFactor;
+
+    updateSceneItemPosition(sceneItemId, newX, newY);
+    debouncedReloadScene();
 });
