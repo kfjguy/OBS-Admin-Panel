@@ -13,7 +13,7 @@
 
 Welcome to the **OBS Admin Panel**, an open-source tool built for streamers and content creators. Want to give control of your OBS to a friend or team member? Now you can! Host a secure web server with an IP whitelist, so only the people you trust can access your OBS admin panel. Using the built-in OBS WebSocket (default TCP port 4455), authorized users can manage scenes, enhancing your streams even further.
 
-**Current Version:** v0.1.0 (Pre-release)
+**Current Version:** v0.2.0
 
 ## Table of Contents
 
