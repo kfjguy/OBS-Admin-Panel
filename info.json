@@ -1,5 +1,5 @@
 {
-    "version": "v0.1.0",
+    "version": "v0.2.0",
     "name": "OBS Admin Panel",
     "description": "Administration web-tool to remote controll certain OBS features via the OBS-WebSocket",
     "author": "kfguy",

@@ -1,6 +1,6 @@
 {
   "name": "obs-admin-panel",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Administration web-tool to remotely control certain OBS features via the OBS-WebSocket",
   "main": "js/server.js",
   "scripts": {
@@ -9,9 +9,9 @@
   },
   "dependencies": {
     "dotenv": "latest",
-    "express": "latest",
+    "express": "^4.21.0",
     "obs-websocket-js": "latest",
-    "socket.io": "latest"
+    "socket.io": "^4.8.0"
   },
   "engines": {
     "node": ">=14.0.0"
