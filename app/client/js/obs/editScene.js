@@ -2,6 +2,8 @@ const urlSegments = window.location.pathname.split('/').filter(segment => segmen
 const sceneName = decodeURIComponent(urlSegments.pop() || '');
 
 let selectedElement = null;
+let updateTimer = null;
+const MOVE_STEP = 5;
 
 // DOM Elements
 const imageContainer = document.getElementById('imageContainer');
@@ -271,6 +273,79 @@ function updateInspector(element) {
         elementYInput.value = 0;
     }
 }
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+document.addEventListener('keydown', (event) => {
+    let handled = false;
+    let deltaX = 0;
+    let deltaY = 0;
+
+    let step = MOVE_STEP;
+    if (event.shiftKey) {
+        step *= 2;
+    }
+
+    switch(event.key) {
+        case 'ArrowUp':
+            deltaY = -step;
+            handled = true;
+            break;
+        case 'ArrowDown':
+            deltaY = step;
+            handled = true;
+            break;
+        case 'ArrowLeft':
+            deltaX = -step;
+            handled = true;
+            break;
+        case 'ArrowRight':
+            deltaX = step;
+            handled = true;
+            break;
+        default:
+            break;
+    }
+
+    if (handled) {
+        event.preventDefault();
+        const scaleFactor = window.scaleFactor || 1;
+
+        let x = parseFloat(selectedElement.getAttribute('data-x')) || 0;
+        let y = parseFloat(selectedElement.getAttribute('data-y')) || 0;
+
+        x += deltaX * scaleFactor;
+        y += deltaY * scaleFactor;
+
+        selectedElement.style.left = `${x}px`;
+        selectedElement.style.top = `${y}px`;
+
+        selectedElement.setAttribute('data-x', x);
+        selectedElement.setAttribute('data-y', y);
+
+        updateInspector(selectedElement);
+
+        if (updateTimer) {
+            clearTimeout(updateTimer);
+        }
+
+        updateTimer = setTimeout(async () => {
+            try {
+                await updateSceneItemPosition(
+                    sceneName,
+                    selectedElement.getAttribute('data-id'),
+                    x * scaleFactor,
+                    y * scaleFactor
+                );
+                await debouncedReloadScene();
+            } catch (error) {
+                console.error("[ERR] Error updating position via arrow keys: ", error);
+            }
+        }, 1000); // 1 sec
+    }
+});
 
 async function toggleLock(itemID) {
     try {
