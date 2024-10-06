@@ -1,29 +1,83 @@
+#mainContainer {
+    display: flex;
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
 #imageContainer {
-    width: 1920px;
-    height: 1080px;
-    background-color: black;
     position: relative;
+    width: 1344px;
+    height: 756px;
+    background-color: black;
     overflow: hidden;
     box-shadow: 0 0 10px rgba(255, 0, 0, 0.74);
 }
 
 #fhdPreviewImage {
-    pointer-events: none;
-    user-select: none;
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
 }
 
-.controllerButtonContainer {
-    position: sticky;
-    top: 1080px;
-    padding: 10px;
-    display: flex;
-    gap: 15px;
+#sceneItemsContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#elementInspector {
+    width: 300px;
+    margin-left: 20px;
+    padding: 20px;
+    background-color: #333;
+    border: 1px solid #444;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    color: #fff;
+    overflow-y: auto;
+    max-height: 1080px;
+}
+
+#elementInspector div {
+    padding-right: 10px;
+}
+
+#elementInspector h3 {
+    margin-top: 0;
+    font-size: 1.5em;
+    color: #fff;
+}
+
+#elementInspector label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+    color: #ccc;
+}
+
+#elementInspector input[type="text"],
+#elementInspector input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #555;
+    border-radius: 3px;
+    background-color: #444;
+    color: #fff;
+}
+
+#elementInspector input[type="checkbox"] {
     margin-top: 10px;
-    z-index: 10;
+}
+
+#elementInspector div {
+    margin-bottom: 10px;
 }

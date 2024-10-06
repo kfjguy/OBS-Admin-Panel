@@ -28,7 +28,7 @@ async function reloadScene() {
 const debouncedReloadScene = debounce(reloadScene, 300);
 
 function loadItems(items) {
-    items.forEach((item, index) => {
+    items.forEach((item) => {
         const element = document.createElement('div');
         element.className = 'scene-item';
         element.style.position = 'absolute';
@@ -64,6 +64,9 @@ function loadItems(items) {
         element.setAttribute('data-y', scaledY);
         element.setAttribute('data-width', scaledWidth);
         element.setAttribute('data-height', scaledHeight);
+        element.setAttribute('data-name', item.sourceName || 'Unknown');
+        element.setAttribute('data-visible', item.sceneItemEnabled);
+        element.setAttribute('data-locked', item.sceneItemLocked);
 
         sceneItemsContainer.appendChild(element);
 
@@ -145,6 +148,11 @@ function makeElementInteractive(element) {
                 end: dragEndListener
             }
         });
+
+    element.addEventListener('click', (event) => {
+        event.stopPropagation();
+        selectElement(element);
+    });
 }
 
 function dragMoveListener(event) {
@@ -162,6 +170,10 @@ function dragMoveListener(event) {
 
     target.setAttribute('data-x', x);
     target.setAttribute('data-y', y);
+
+    if (selectedElement === target) {
+        updateInspector(target);
+    }
 }
 
 async function dragEndListener(event) {
@@ -177,4 +189,31 @@ async function dragEndListener(event) {
 
     await updateSceneItemPosition(sceneName, sceneItemId, originalX, originalY);
     await debouncedReloadScene();
+}
+
+function selectElement(element) {
+    if (selectedElement) {
+        selectedElement.classList.remove('selected');
+    }
+    selectedElement = element;
+    selectedElement.classList.add('selected');
+    updateInspector(element);
+}
+
+function updateInspector(element) {
+    const elementNameInput = document.getElementById('elementName');
+    const elementVisibilityInput = document.getElementById('elementVisibility');
+    const elementLockedInput = document.getElementById('elementLocked');
+    const elementWidthInput = document.getElementById('elementWidth');
+    const elementHeightInput = document.getElementById('elementHeight');
+    const elementXInput = document.getElementById('elementX');
+    const elementYInput = document.getElementById('elementY');
+
+    elementNameInput.value = element.getAttribute('data-name') || '';
+    elementVisibilityInput.checked = (element.getAttribute('data-visible') === 'true');
+    elementLockedInput.checked = (element.getAttribute('data-locked') === 'true');
+    elementWidthInput.value = parseFloat(element.getAttribute('data-width')) || 0;
+    elementHeightInput.value = parseFloat(element.getAttribute('data-height')) || 0;
+    elementXInput.value = parseFloat(element.getAttribute('data-x')) || 0;
+    elementYInput.value = parseFloat(element.getAttribute('data-y')) || 0;
 }

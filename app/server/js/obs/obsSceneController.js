@@ -148,7 +148,20 @@ async function toggleSceneItemVisibility(sceneName, itemId) {
     }
 }
 
-// SCENE EXISTS
+// TOGGLE LOCK OF SCENE ITEM
+async function toggleSceneItemLock(sceneName, itemId) {
+    checkConnection();
+    try {
+        const { locked } = await obs.call('GetSceneItemProperties', { sceneName, itemId });
+        await obs.call('SetSceneItemProperties', { sceneName, itemId, locked: !locked });
+        return true;
+    } catch (error) {
+        console.error('[ERR] Error toggling scene item lock:', error);
+        return false;
+    }
+}
+
+//#region Helper functions
 async function sceneExists(sceneName) {
     try {
         const scenes = await getScenesList();
@@ -165,6 +178,7 @@ async function sceneExists(sceneName) {
         return false;
     }
 }
+//#endregion Helper functions
 
 module.exports = {
     getScene,
@@ -177,5 +191,6 @@ module.exports = {
     addSceneItem,
     updateSceneItem,
     removeSceneItem,
-    toggleSceneItemVisibility
+    toggleSceneItemVisibility,
+    toggleSceneItemLock
 };

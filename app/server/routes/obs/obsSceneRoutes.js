@@ -149,4 +149,19 @@ router.put('/toggleSceneItemVisibility/:sceneName/:itemId', async (req, res) => 
     }
 });
 
+// TOGGLE LOCK OF SCENE ITEM
+router.put('/toggleSceneItemLock/:sceneName/:itemId', async (req, res) => {
+    const { sceneName, itemId } = req.params;
+    try {
+        const success = await obsSceneController.toggleSceneItemLock(sceneName, itemId);
+        if (!success) {
+            res.status(400).json({ error: '[400] Scene item lock not toggled' });
+        } else {
+            res.status(200).json({ message: '[200] Scene item lock toggled' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message || 'Failed to toggle scene item lock' });
+    }
+});
+
 module.exports = router;
