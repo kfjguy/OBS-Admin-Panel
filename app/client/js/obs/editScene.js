@@ -8,8 +8,13 @@ const MOVE_STEP = 5;
 // DOM Elements
 const imageContainer = document.getElementById('imageContainer');
 const sceneItemsContainer = document.getElementById('sceneItemsContainer');
-const lockedCheckbox = document.getElementById('elementLocked');
-const visibilityCheckbox = document.getElementById('elementVisibility');
+const elementNameInput = document.getElementById('elementName');
+const elementVisibilityInput = document.getElementById('elementVisibility');
+const elementLockedInput = document.getElementById('elementLocked');
+const elementWidthInput = document.getElementById('elementWidth');
+const elementHeightInput = document.getElementById('elementHeight');
+const elementXInput = document.getElementById('elementX');
+const elementYInput = document.getElementById('elementY');
 
 function debounce(func, wait) {
     let timeout;
@@ -23,7 +28,7 @@ async function reloadScene() {
     while (sceneItemsContainer.firstChild) {
         sceneItemsContainer.removeChild(sceneItemsContainer.firstChild);
     }
-    await loadPreview(sceneName);
+    await loadPreview();
     selectedElement = null;
     updateInspector(selectedElement);
 }
@@ -82,70 +87,9 @@ function loadItems(items) {
     });
 }
 
-async function updatePreview(imageData) {
-    try {
-        const previewImage = document.getElementById('fhdPreviewImage');
-        previewImage.src = imageData;
-
-        previewImage.onload = () => {
-            const naturalWidth = previewImage.naturalWidth;
-            const displayedWidth = previewImage.clientWidth;
-            window.scaleFactor = naturalWidth / displayedWidth;
-            getAllSceneItems(sceneName);
-        };
-    } catch (error) {
-        console.error("[ERR] Error updating preview: ", error);
-    }
-}
-
-async function loadPreview(sceneName) {
-    try {
-        const imageDataResponse = await fetch(`/obs/actions/getPreviewOfScene/${sceneName}/1920/1080/100`);
-        const imageData = await imageDataResponse.json();
-        const base64Image = imageData.preview;
-
-        await updatePreview(base64Image);
-    } catch (error) {
-        console.error("[ERR] Error previewing scene: ", error);
-    }
-}
-
-async function getAllSceneItems(sceneName) {
-    try {
-        const response = await fetch(`/obs/scenes/getSceneItems/${sceneName}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const items = await response.json();
-        loadItems(items);
-    } catch (error) {
-        console.error("[ERR] Error fetching scene items: ", error);
-    }
-}
-
-async function updateSceneItemPosition(sceneName, sceneItemId, x, y) {
-    try {
-        const response = await fetch(`/obs/scenes/updateSceneItem/${sceneName}/${sceneItemId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                position: { x, y }
-            })
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return await response.json();
-    } catch (error) {
-        console.error("[ERR] Error updating scene item position: ", error);
-    }
-}
-
 // Initialize the Scene Editor
 (async function initialize() {
-    await loadPreview(sceneName);
+    await loadPreview();
     updateInspector(null);
 })();
 
@@ -217,7 +161,7 @@ async function dragEndListener(event) {
     const originalX = x * scaleFactor;
     const originalY = y * scaleFactor;
 
-    await updateSceneItemPosition(sceneName, sceneItemId, originalX, originalY);
+    await updateSceneItemPosition(sceneItemId, originalX, originalY);
     await debouncedReloadScene();
 }
 
@@ -231,22 +175,14 @@ function selectElement(element) {
 }
 
 function updateInspector(element) {
-    const elementNameInput = document.getElementById('elementName');
-    const elementVisibilityInput = document.getElementById('elementVisibility');
-    const elementLockedInput = document.getElementById('elementLocked');
-    const elementWidthInput = document.getElementById('elementWidth');
-    const elementHeightInput = document.getElementById('elementHeight');
-    const elementXInput = document.getElementById('elementX');
-    const elementYInput = document.getElementById('elementY');
-
     if (element) {
-        elementNameInput.disabled = false;
+        elementNameInput.disabled = true; // TODO
         elementVisibilityInput.disabled = false;
         elementLockedInput.disabled = false;
-        elementWidthInput.disabled = false;
-        elementHeightInput.disabled = false;
-        elementXInput.disabled = false;
-        elementYInput.disabled = false;
+        elementWidthInput.disabled = true; // TODO
+        elementHeightInput.disabled = true; // TODO
+        elementXInput.disabled = true; // TODO
+        elementYInput.disabled = true; // TODO
 
         elementNameInput.value = element.getAttribute('data-name') || '';
         elementVisibilityInput.checked = (element.getAttribute('data-visible') === 'true');
@@ -334,7 +270,6 @@ document.addEventListener('keydown', (event) => {
         updateTimer = setTimeout(async () => {
             try {
                 await updateSceneItemPosition(
-                    sceneName,
                     selectedElement.getAttribute('data-id'),
                     x * scaleFactor,
                     y * scaleFactor
@@ -346,6 +281,67 @@ document.addEventListener('keydown', (event) => {
         }, 1000); // 1 sec
     }
 });
+
+async function updatePreview(imageData) {
+    try {
+        const previewImage = document.getElementById('fhdPreviewImage');
+        previewImage.src = imageData;
+
+        previewImage.onload = () => {
+            const naturalWidth = previewImage.naturalWidth;
+            const displayedWidth = previewImage.clientWidth;
+            window.scaleFactor = naturalWidth / displayedWidth;
+            getAllSceneItems();
+        };
+    } catch (error) {
+        console.error("[ERR] Error updating preview: ", error);
+    }
+}
+
+async function loadPreview() {
+    try {
+        const imageDataResponse = await fetch(`/obs/actions/getPreviewOfScene/${sceneName}/1920/1080/100`);
+        const imageData = await imageDataResponse.json();
+        const base64Image = imageData.preview;
+
+        await updatePreview(base64Image);
+    } catch (error) {
+        console.error("[ERR] Error previewing scene: ", error);
+    }
+}
+
+async function getAllSceneItems() {
+    try {
+        const response = await fetch(`/obs/scenes/getSceneItems/${sceneName}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const items = await response.json();
+        loadItems(items);
+    } catch (error) {
+        console.error("[ERR] Error fetching scene items: ", error);
+    }
+}
+
+async function updateSceneItemPosition(sceneItemId, x, y) {
+    try {
+        const response = await fetch(`/obs/scenes/updateSceneItem/${sceneName}/${sceneItemId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                position: { x, y }
+            })
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("[ERR] Error updating scene item position: ", error);
+    }
+}
 
 async function toggleLock(itemID) {
     try {
@@ -394,14 +390,14 @@ async function toggleVisibility(itemID) {
     }
 }
 
-lockedCheckbox.addEventListener('change', () => {
+elementLockedInput.addEventListener('change', () => {
     if (!selectedElement) {
         return;
     }
     toggleLock(selectedElement.getAttribute('data-id'));
 });
 
-visibilityCheckbox.addEventListener('change', () => {
+elementVisibilityInput.addEventListener('change', () => {
     if (!selectedElement) {
         return;
     }
