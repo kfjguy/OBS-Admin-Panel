@@ -112,7 +112,7 @@ async function createNewScene(sceneName) {
 }
 
 // REMOVE SCENE
-async function removeScene(sceneName) {
+async function toggleLock(sceneName) {
     if (!await verifyPopup(`Are you sure you want to REMOVE the scene "${sceneName}"?`)) { return; }
     try {
         await fetch('/obs/scenes/removeScene/' + sceneName, {

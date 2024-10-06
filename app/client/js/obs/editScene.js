@@ -2,11 +2,12 @@ const urlSegments = window.location.pathname.split('/').filter(segment => segmen
 const sceneName = decodeURIComponent(urlSegments.pop() || '');
 
 let selectedElement = null;
-let outlineElements = { top: null, bottom: null, left: null, right: null };
 
-// DOM elements
+// DOM Elements
 const imageContainer = document.getElementById('imageContainer');
 const sceneItemsContainer = document.getElementById('sceneItemsContainer');
+const lockedCheckbox = document.getElementById('elementLocked');
+const visibilityCheckbox = document.getElementById('elementVisibility');
 
 function debounce(func, wait) {
     let timeout;
@@ -17,12 +18,12 @@ function debounce(func, wait) {
 }
 
 async function reloadScene() {
-    const sceneItemsContainer = document.getElementById('sceneItemsContainer');
     while (sceneItemsContainer.firstChild) {
         sceneItemsContainer.removeChild(sceneItemsContainer.firstChild);
     }
     await loadPreview(sceneName);
     selectedElement = null;
+    updateInspector(selectedElement);
 }
 
 const debouncedReloadScene = debounce(reloadScene, 300);
@@ -53,10 +54,8 @@ function loadItems(items) {
         element.style.height = `${scaledHeight}px`;
 
         element.style.boxSizing = 'border-box';
-        element.style.border = '4px dashed red';
         element.style.backgroundColor = 'rgba(128, 128, 128, 0.05)';
         element.style.opacity = '1';
-        element.style.cursor = 'pointer';
         element.style.zIndex = '10';
 
         element.setAttribute('data-id', item.sceneItemId);
@@ -68,8 +67,15 @@ function loadItems(items) {
         element.setAttribute('data-visible', item.sceneItemEnabled);
         element.setAttribute('data-locked', item.sceneItemLocked);
 
-        sceneItemsContainer.appendChild(element);
+        if (item.sceneItemLocked) {
+            element.classList.add('locked');
+        }
 
+        if (!item.sceneItemLocked) {
+            element.classList.add('draggable');
+        }
+
+        sceneItemsContainer.appendChild(element);
         makeElementInteractive(element);
     });
 }
@@ -135,19 +141,36 @@ async function updateSceneItemPosition(sceneName, sceneItemId, x, y) {
     }
 }
 
-// Initialize the scene editor
+// Initialize the Scene Editor
 (async function initialize() {
     await loadPreview(sceneName);
+    updateInspector(null);
 })();
 
 function makeElementInteractive(element) {
-    interact(element)
-        .draggable({
-            listeners: {
-                move: dragMoveListener,
-                end: dragEndListener
-            }
-        });
+    const isLocked = element.getAttribute('data-locked') === 'true';
+
+    if (!isLocked) {
+        interact(element)
+            .draggable({
+                listeners: {
+                    move: dragMoveListener,
+                    end: dragEndListener
+                },
+                // // restrict movement
+                // modifiers: [
+                //     interact.modifiers.restrictRect({
+                //         restriction: 'parent',
+                //         endOnly: true
+                //     })
+                // ],
+                inertia: true
+            });
+        element.classList.add('draggable');
+    } else {
+        interact(element).unset();
+        element.classList.remove('draggable');
+    }
 
     element.addEventListener('click', (event) => {
         event.stopPropagation();
@@ -157,6 +180,11 @@ function makeElementInteractive(element) {
 
 function dragMoveListener(event) {
     const target = event.target;
+    const isLocked = target.getAttribute('data-locked') === 'true';
+    if (isLocked) {
+        return;
+    }
+
     const scaleFactor = window.scaleFactor || 1;
 
     let x = parseFloat(target.getAttribute('data-x')) || 0;
@@ -209,11 +237,106 @@ function updateInspector(element) {
     const elementXInput = document.getElementById('elementX');
     const elementYInput = document.getElementById('elementY');
 
-    elementNameInput.value = element.getAttribute('data-name') || '';
-    elementVisibilityInput.checked = (element.getAttribute('data-visible') === 'true');
-    elementLockedInput.checked = (element.getAttribute('data-locked') === 'true');
-    elementWidthInput.value = parseFloat(element.getAttribute('data-width')) || 0;
-    elementHeightInput.value = parseFloat(element.getAttribute('data-height')) || 0;
-    elementXInput.value = parseFloat(element.getAttribute('data-x')) || 0;
-    elementYInput.value = parseFloat(element.getAttribute('data-y')) || 0;
+    if (element) {
+        elementNameInput.disabled = false;
+        elementVisibilityInput.disabled = false;
+        elementLockedInput.disabled = false;
+        elementWidthInput.disabled = false;
+        elementHeightInput.disabled = false;
+        elementXInput.disabled = false;
+        elementYInput.disabled = false;
+
+        elementNameInput.value = element.getAttribute('data-name') || '';
+        elementVisibilityInput.checked = (element.getAttribute('data-visible') === 'true');
+        elementLockedInput.checked = (element.getAttribute('data-locked') === 'true');
+        elementWidthInput.value = parseFloat(element.getAttribute('data-width')) || 0;
+        elementHeightInput.value = parseFloat(element.getAttribute('data-height')) || 0;
+        elementXInput.value = parseFloat(element.getAttribute('data-x')) || 0;
+        elementYInput.value = parseFloat(element.getAttribute('data-y')) || 0;
+    } else {
+        elementNameInput.disabled = true;
+        elementVisibilityInput.disabled = true;
+        elementLockedInput.disabled = true;
+        elementWidthInput.disabled = true;
+        elementHeightInput.disabled = true;
+        elementXInput.disabled = true;
+        elementYInput.disabled = true;
+
+        elementNameInput.value = '';
+        elementVisibilityInput.checked = false;
+        elementLockedInput.checked = false;
+        elementWidthInput.value = 0;
+        elementHeightInput.value = 0;
+        elementXInput.value = 0;
+        elementYInput.value = 0;
+    }
 }
+
+async function toggleLock(itemID) {
+    try {
+        await fetch(`/obs/scenes/toggleSceneItemLock/${encodeURIComponent(sceneName)}/${encodeURIComponent(itemID)}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (selectedElement && selectedElement.getAttribute('data-id') === itemID) {
+            const isLocked = selectedElement.getAttribute('data-locked') === 'true';
+            selectedElement.setAttribute('data-locked', !isLocked);
+
+            if (!isLocked) {
+                selectedElement.classList.add('locked');
+                selectedElement.classList.remove('selected');
+                selectedElement.classList.remove('draggable');
+                interact(selectedElement).unset();
+            } else {
+                selectedElement.classList.remove('locked');
+                selectedElement.classList.add('draggable');
+                makeElementInteractive(selectedElement);
+            }
+
+            updateInspector(selectedElement);
+        } else {
+            await debouncedReloadScene();
+        }
+    } catch (error) {
+        console.error("[ERR]: ", error);
+    }
+}
+
+async function toggleVisibility(itemID) {
+    try {
+        await fetch(`/obs/scenes/toggleSceneItemVisibility/${encodeURIComponent(sceneName)}/${encodeURIComponent(itemID)}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        await debouncedReloadScene();
+    } catch (error) {
+        console.error("[ERR]: ", error);
+    }
+}
+
+lockedCheckbox.addEventListener('change', () => {
+    if (!selectedElement) {
+        return;
+    }
+    toggleLock(selectedElement.getAttribute('data-id'));
+});
+
+visibilityCheckbox.addEventListener('change', () => {
+    if (!selectedElement) {
+        return;
+    }
+    toggleVisibility(selectedElement.getAttribute('data-id'));
+});
+
+sceneItemsContainer.addEventListener('click', () => {
+    if (selectedElement) {
+        selectedElement.classList.remove('selected');
+        selectedElement = null;
+        updateInspector(null);
+    }
+});

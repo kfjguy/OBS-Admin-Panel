@@ -81,3 +81,21 @@
 #elementInspector div {
     margin-bottom: 10px;
 }
+
+.scene-item {
+    border: 4px dashed grey;
+    transition: border-color 0.3s, cursor 0.3s;
+}
+
+.scene-item.selected {
+    border-color: red;
+}
+
+.scene-item.locked {
+    border-color: blue;
+    cursor: default;
+}
+
+.scene-item.draggable {
+    cursor: grab;
+}

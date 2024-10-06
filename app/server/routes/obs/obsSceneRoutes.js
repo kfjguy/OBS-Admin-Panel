@@ -104,11 +104,11 @@ router.post('/addSceneItem/:sceneName', async (req, res) => {
 });
 
 // UPDATE SCENE ITEM
-router.put('/updateSceneItem/:sceneName/:itemId', async (req, res) => {
-    const { sceneName, itemId } = req.params;
+router.put('/updateSceneItem/:sceneName/:itemID', async (req, res) => {
+    const { sceneName, itemID } = req.params;
     const sceneItemUpdates = req.body;
     try {
-        const success = await obsSceneController.updateSceneItem(sceneName, itemId, sceneItemUpdates);
+        const success = await obsSceneController.updateSceneItem(sceneName, itemID, sceneItemUpdates);
         if (!success) {
             res.status(400).json({ error: '[400] Scene item not found or not updated' });
         } else {
@@ -120,10 +120,10 @@ router.put('/updateSceneItem/:sceneName/:itemId', async (req, res) => {
 });
 
 // REMOVE SCENE ITEM
-router.delete('/removeSceneItem/:sceneName/:itemId', async (req, res) => {
-    const { sceneName, itemId } = req.params;
+router.delete('/removeSceneItem/:sceneName/:itemID', async (req, res) => {
+    const { sceneName, itemID } = req.params;
     try {
-        const success = await obsSceneController.removeSceneItem(sceneName, itemId);
+        const success = await obsSceneController.removeSceneItem(sceneName, itemID);
         if (!success) {
             res.status(400).json({ error: '[400] Scene item not found or not removed' });
         } else {
@@ -135,10 +135,12 @@ router.delete('/removeSceneItem/:sceneName/:itemId', async (req, res) => {
 });
 
 // TOGGLE VISIBILITY OF SCENE ITEM
-router.put('/toggleSceneItemVisibility/:sceneName/:itemId', async (req, res) => {
-    const { sceneName, itemId } = req.params;
+router.put('/toggleSceneItemVisibility/:sceneName/:itemID', async (req, res) => {
+    let { sceneName, itemID } = req.params;
     try {
-        const success = await obsSceneController.toggleSceneItemVisibility(sceneName, itemId);
+        sceneName = decodeURIComponent(sceneName);
+        itemID = decodeURIComponent(itemID);
+        const success = await obsSceneController.toggleSceneItemVisibility(sceneName, itemID);
         if (!success) {
             res.status(400).json({ error: '[400] Scene item visibility not toggled' });
         } else {
@@ -150,10 +152,12 @@ router.put('/toggleSceneItemVisibility/:sceneName/:itemId', async (req, res) => 
 });
 
 // TOGGLE LOCK OF SCENE ITEM
-router.put('/toggleSceneItemLock/:sceneName/:itemId', async (req, res) => {
-    const { sceneName, itemId } = req.params;
+router.put('/toggleSceneItemLock/:sceneName/:itemID', async (req, res) => {
+    let { sceneName, itemID } = req.params;
     try {
-        const success = await obsSceneController.toggleSceneItemLock(sceneName, itemId);
+        sceneName = decodeURIComponent(sceneName);
+        itemID = decodeURIComponent(itemID);
+        const success = await obsSceneController.toggleSceneItemLock(sceneName, itemID);
         if (!success) {
             res.status(400).json({ error: '[400] Scene item lock not toggled' });
         } else {
