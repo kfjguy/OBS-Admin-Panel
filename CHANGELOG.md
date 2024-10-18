@@ -1,4 +1,3 @@
-Version 0.1.X
  - 0.1.0
    - Initial Version
  - 0.2.0
