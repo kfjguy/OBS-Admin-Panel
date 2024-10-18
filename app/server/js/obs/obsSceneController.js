@@ -136,11 +136,12 @@ async function removeSceneItem(sceneName, itemId) {
 }
 
 // TOGGLE VISIBILITY OF SCENE ITEM
-async function toggleSceneItemVisibility(sceneName, itemId) {
+async function toggleSceneItemVisibility(sceneName, ItemID) {
     checkConnection();
     try {
-        const { visible } = await obs.call('GetSceneItemProperties', { sceneName, itemId });
-        await obs.call('SetSceneItemProperties', { sceneName, itemId, visible: !visible });
+        let sceneItemId = Number(ItemID);
+        let { sceneItemEnabled } = await obs.call('GetSceneItemEnabled', { sceneName, sceneItemId });
+        await obs.call('SetSceneItemEnabled', { sceneName, sceneItemId, sceneItemEnabled: !sceneItemEnabled });
         return true;
     } catch (error) {
         console.error('[ERR] Error toggling scene item visibility:', error);
@@ -148,7 +149,21 @@ async function toggleSceneItemVisibility(sceneName, itemId) {
     }
 }
 
-// SCENE EXISTS
+// TOGGLE LOCK OF SCENE ITEM
+async function toggleSceneItemLock(sceneName, ItemID) {
+    checkConnection();
+    try {
+        let sceneItemId = Number(ItemID);
+        let { sceneItemLocked } = await obs.call('GetSceneItemLocked', { sceneName, sceneItemId });
+        await obs.call('SetSceneItemLocked', { sceneName, sceneItemId, sceneItemLocked: !sceneItemLocked });
+        return true;
+    } catch (error) {
+        console.error('[ERR] Error toggling scene item lock:', error);
+        return false;
+    }
+}
+
+//#region Helper functions
 async function sceneExists(sceneName) {
     try {
         const scenes = await getScenesList();
@@ -165,6 +180,7 @@ async function sceneExists(sceneName) {
         return false;
     }
 }
+//#endregion Helper functions
 
 module.exports = {
     getScene,
@@ -177,5 +193,6 @@ module.exports = {
     addSceneItem,
     updateSceneItem,
     removeSceneItem,
-    toggleSceneItemVisibility
+    toggleSceneItemVisibility,
+    toggleSceneItemLock
 };

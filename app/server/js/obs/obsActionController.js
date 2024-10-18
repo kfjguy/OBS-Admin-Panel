@@ -1,5 +1,6 @@
 const { obs, checkConnection } = require('./obsWebSocketController');
 const { sceneExists, getScene } = require('./obsSceneController');
+const { getStats } = require('./obsInfoController');
 
 // PREVIEW OF SCENE
 async function getPreviewOfScene(sceneName, width, height, quality) {
@@ -21,6 +22,32 @@ async function getPreviewOfScene(sceneName, width, height, quality) {
     }
 }
 
+// STATS
+async function getVersion() {
+    checkConnection();
+    try {
+        const status = await obs.call('GetStats');
+        return status;
+    } catch (error) {
+        console.error('[ERR] Error getting status:', error);
+        throw error;
+    }
+}
+
+// VERSION
+async function getVersion() {
+    checkConnection();
+    try {
+        const status = await obs.call('GetVersion');
+        return status;
+    } catch (error) {
+        console.error('[ERR] Error getting version:', error);
+        throw error;
+    }
+}
+
 module.exports = {
-    getPreviewOfScene
+    getPreviewOfScene,
+    getStats,
+    getVersion
 };
