@@ -107,13 +107,6 @@ function makeElementInteractive(element) {
                     move: dragMoveListener,
                     end: dragEndListener
                 },
-                // // restrict movement
-                // modifiers: [
-                //     interact.modifiers.restrictRect({
-                //         restriction: 'parent',
-                //         endOnly: true
-                //     })
-                // ],
                 inertia: true
             });
         element.classList.add('draggable');
@@ -180,11 +173,11 @@ function selectElement(element) {
 
 function updateInspector(element) {
     if (element) {
-        elementNameInput.disabled = true; // TODO
+        elementNameInput.disabled = true;
         elementVisibilityInput.disabled = false;
         elementLockedInput.disabled = false;
-        elementWidthInput.disabled = true; // TODO
-        elementHeightInput.disabled = true; // TODO
+        elementWidthInput.disabled = true;
+        elementHeightInput.disabled = true;
         elementXInput.disabled = false;
         elementYInput.disabled = false;
 
@@ -333,7 +326,7 @@ async function getAllSceneItems() {
 
 async function updateSceneItemPosition(sceneItemId, x, y) {
     try {
-        const response = await fetch(`/obs/scenes/updateSceneItem/${sceneName}/${sceneItemId}`, {
+        const response = await fetch(`/obs/scenes/updateSceneItem/${encodeURIComponent(sceneName)}/${encodeURIComponent(sceneItemId)}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
