@@ -15,12 +15,43 @@
 <body>
     <!-- ELEMENT LOADED WITH JS -->
     <div id="dashboard-button"></div>
-
-    <div id="imageContainer">
-        <img id="fhdPreviewImage" src="" alt="Loading...">
-        <div id="sceneItemsContainer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+    <div id="mainContainer">
+        <div id="imageContainer">
+            <img id="fhdPreviewImage" src="" alt="Loading...">
+            <div id="sceneItemsContainer"></div>
+        </div>
+        <div id="elementInspector">
+            <h3>Element Details 📝</h3>
+            <div>
+                <label for="elementName">Element Name:</label>
+                <input type="text" id="elementName" name="elementName">
+            </div>
+            <div>
+                <label for="elementVisibility">Visibility:</label>
+                <input type="checkbox" id="elementVisibility" name="elementVisibility">
+            </div>
+            <div>
+                <label for="elementLocked">Locked:</label>
+                <input type="checkbox" id="elementLocked" name="elementLocked">
+            </div>
+            <div>
+                <label for="elementWidth">Width:</label>
+                <input type="number" id="elementWidth" name="elementWidth">
+            </div>
+            <div>
+                <label for="elementHeight">Height:</label>
+                <input type="number" id="elementHeight" name="elementHeight">
+            </div>
+            <div>
+                <label for="elementX">X Position:</label>
+                <input type="number" id="elementX" name="elementX">
+            </div>
+            <div>
+                <label for="elementY">Y Position:</label>
+                <input type="number" id="elementY" name="elementY">
+            </div>
+        </div>
     </div>
-
     <script src="/js/elements/elementLoader.js"></script>
     <script src="/js/elements/verifyPopup.js"></script>
     <script src="/js/obs/editScene.js"></script>
